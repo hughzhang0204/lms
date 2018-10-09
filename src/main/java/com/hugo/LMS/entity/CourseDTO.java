@@ -2,11 +2,21 @@ package com.hugo.LMS.entity;
 
 public class CourseDTO {
 
+    private Long id;
+
     private String name;
 
     private String bibliography;
 
     public CourseDTO() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

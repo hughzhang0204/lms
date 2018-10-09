@@ -17,8 +17,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/api")
 @Api(tags="Lecturers")
-public class LecturerController {
+public class LecturerController implements BaseController<Lecturer, LecturerDTO>{
 
     @Autowired
     private LecturerRepository lecturerRepository;
@@ -58,7 +59,6 @@ public class LecturerController {
 
         if(!optional.isPresent()){
             return  ResponseEntity.notFound().build();
-//            return ResponseEntity.ok().build();
         }
 
         Lecturer lecturer = optional.get();
@@ -69,14 +69,9 @@ public class LecturerController {
     @ApiOperation(value = "Create a new lecturer")
     public ResponseEntity<Object> createLecturer(@RequestBody LecturerDTO dto){
 
-        Lecturer lecturer = new Lecturer();
-        lecturer.setDescription(dto.getDescription());
-        lecturer.setFee(dto.getFee());
-        lecturer.setLanguage(dto.getLanguage());
-        lecturer.setMaximumStudent(dto.getMaximumStudent());
-        lecturer.setTitle(dto.getTitle());
+        Lecturer lecturer = getObject(dto);
+        lecturerRepository.saveAndFlush(lecturer);
 
-       lecturerRepository.saveAndFlush(lecturer);
 //        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 //                .buildAndExpand(savedStudent.getId()).toUri();
 
@@ -141,9 +136,11 @@ public class LecturerController {
 
     }
 
-    private LecturerDTO getDTO(Lecturer entity){
+    @Override
+    public LecturerDTO getDTO(Lecturer entity){
 
         LecturerDTO dto = new LecturerDTO();
+        dto.setId(entity.getId());
         dto.setDescription(entity.getDescription());
         dto.setFee(entity.getFee());
         dto.setLanguage(entity.getLanguage());
@@ -151,5 +148,18 @@ public class LecturerController {
         dto.setTitle(entity.getTitle());
 
         return dto;
+    }
+
+    @Override
+    public Lecturer getObject(LecturerDTO dto) {
+
+        Lecturer lecturer = new Lecturer();
+        lecturer.setDescription(dto.getDescription());
+        lecturer.setFee(dto.getFee());
+        lecturer.setLanguage(dto.getLanguage());
+        lecturer.setMaximumStudent(dto.getMaximumStudent());
+        lecturer.setTitle(dto.getTitle());
+
+        return lecturer;
     }
 }

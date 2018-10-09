@@ -1,9 +1,7 @@
 package com.hugo.LMS.controller;
 
-import com.hugo.LMS.entity.Course;
-import com.hugo.LMS.entity.CourseDTO;
 import com.hugo.LMS.entity.Student;
-import com.hugo.LMS.entity.studentDTO;
+import com.hugo.LMS.entity.StudentDTO;
 import com.hugo.LMS.repository.StudentRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,10 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @Api(tags = "Students")
-public class StudentController {
+public class StudentController implements BaseController<Student, StudentDTO> {
 
     @Autowired
     private StudentRepository studentRepository;
@@ -41,7 +40,11 @@ public class StudentController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<List<Student>>(list, HttpStatus.OK);
+        List<StudentDTO> dtos = list.stream()
+                .map(student -> getDTO(student))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity(dtos, HttpStatus.OK);
     }
 
     @GetMapping("/students/{id}")
@@ -55,27 +58,21 @@ public class StudentController {
         }
 
         Student student = optional.get();
-        return new ResponseEntity(student, HttpStatus.OK);
+        return new ResponseEntity(getDTO(student), HttpStatus.OK);
     }
 
     @PostMapping(value = "/students", produces = MediaType.APPLICATION_JSON_VALUE, consumes =  MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a new student")
-    public ResponseEntity<Object> createCourse(@RequestBody studentDTO dto){
+    public ResponseEntity<Object> createCourse(@RequestBody StudentDTO dto){
 
-        Student student = new Student();
-        student.setFirstName(dto.getFirstName());
-        student.setLastName(dto.getLastName());
-        student.setDOB(dto.getDOB());
-        student.setGender(dto.getGender());
-        student.setEmail(dto.getEmail());
-        student.setCredit(dto.getCredit());
+        Student student = getObject(dto);
         student = studentRepository.saveAndFlush(student);
         return new ResponseEntity<>(student, HttpStatus.CREATED);
     }
 
     @PutMapping("/students/{id}")
     @ApiOperation(value = "update a student detail")
-    public ResponseEntity<Object> updateStudent(@PathVariable long id, @RequestBody studentDTO dto){
+    public ResponseEntity<Object> updateStudent(@PathVariable long id, @RequestBody StudentDTO dto){
         Optional<Student> optional = studentRepository.findById(id);
 
         if(!optional.isPresent()){
@@ -89,10 +86,10 @@ public class StudentController {
         student.setGender(dto.getGender());
         student.setEmail(dto.getEmail());
         student.setCredit(dto.getCredit());
-        student = studentRepository.saveAndFlush(student);
+
         student = studentRepository.saveAndFlush(student);
 
-        return new ResponseEntity<>(student, HttpStatus.OK);
+        return new ResponseEntity(getDTO(student), HttpStatus.OK);
     }
 
     @DeleteMapping("/students/{id}")
@@ -106,5 +103,30 @@ public class StudentController {
         studentRepository.deleteById(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public StudentDTO getDTO(Student entity) {
+        StudentDTO dto = new StudentDTO();
+        dto.setId(entity.getId());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+        dto.setDOB(entity.getDOB());
+        dto.setGender(entity.getGender());
+        dto.setEmail(entity.getEmail());
+        dto.setCredit(entity.getCredit());
+        return dto;
+    }
+
+    @Override
+    public Student getObject(StudentDTO dto) {
+        Student student = new Student();
+        student.setFirstName(dto.getFirstName());
+        student.setLastName(dto.getLastName());
+        student.setDOB(dto.getDOB());
+        student.setGender(dto.getGender());
+        student.setEmail(dto.getEmail());
+        student.setCredit(dto.getCredit());
+        return student;
     }
 }

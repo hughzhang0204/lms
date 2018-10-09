@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static javax.persistence.TemporalType.DATE;
+
 @Entity(name="Student")
 @Table(name="Student")
 @Access(AccessType.FIELD)
@@ -24,6 +26,7 @@ public class Student {
     @Column(nullable = true, length = 8)
     private Gender gender;
 
+    @Temporal(DATE)
     @Column
     private Date DOB;
 

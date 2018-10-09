@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/api")
 @Api(tags="Courses")
-public class CourseController {
+public class CourseController implements BaseController<Course, CourseDTO>{
 
     @Autowired
     private CourseRepository courseRepository;
@@ -40,7 +42,9 @@ public class CourseController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<List<Course>>(list, HttpStatus.OK);
+        List<CourseDTO> dtos = list.stream().map(course -> getDTO(course)).collect(Collectors.toList());
+
+        return new ResponseEntity(dtos, HttpStatus.OK);
     }
 
     @GetMapping("/courses/{id}")
@@ -55,17 +59,14 @@ public class CourseController {
         }
 
         Course course = optional.get();
-        return new ResponseEntity(course, HttpStatus.OK);
+        return new ResponseEntity(getDTO(course), HttpStatus.OK);
     }
 
     @PostMapping("/courses")
     @ApiOperation(value = "Create a new course")
     public ResponseEntity<Object> createCourse(@RequestBody CourseDTO dto){
 
-        Course course = new Course();
-        course.setName(dto.getName());
-        course.setBibliography(dto.getBibliography());
-
+        Course course = getObject(dto);
         course = courseRepository.saveAndFlush(course);
         return new ResponseEntity<>(course, HttpStatus.CREATED);
     }
@@ -95,5 +96,25 @@ public class CourseController {
         courseRepository.deleteById(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public CourseDTO getDTO(Course entity) {
+
+        CourseDTO dto = new CourseDTO();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setBibliography(entity.getBibliography());
+
+        return dto;
+    }
+
+    @Override
+    public Course getObject(CourseDTO dto) {
+
+        Course course = new Course();
+        course.setName(dto.getName());
+        course.setBibliography(dto.getBibliography());
+        return  course;
     }
 }
