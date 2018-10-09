@@ -68,7 +68,7 @@ public class CourseController implements BaseController<Course, CourseDTO>{
 
         Course course = getObject(dto);
         course = courseRepository.saveAndFlush(course);
-        return new ResponseEntity<>(course, HttpStatus.CREATED);
+        return new ResponseEntity(getDTO(course), HttpStatus.CREATED);
     }
 
     @PutMapping("/courses/{id}")
@@ -83,7 +83,7 @@ public class CourseController implements BaseController<Course, CourseDTO>{
         course.setBibliography(dto.getBibliography());
 
         course = courseRepository.saveAndFlush(course);
-        return new ResponseEntity<>(course, HttpStatus.OK);
+        return new ResponseEntity(getDTO(course), HttpStatus.OK);
     }
 
     @DeleteMapping("/courses/{id}")
@@ -95,7 +95,7 @@ public class CourseController implements BaseController<Course, CourseDTO>{
         }
         courseRepository.deleteById(id);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @Override

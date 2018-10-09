@@ -41,7 +41,7 @@ public class LecturerController implements BaseController<Lecturer, LecturerDTO>
         List<Lecturer> list = lecturerRepository.findAll();
 
         if(list.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
 
         List<LecturerDTO> dtos = list.stream()
@@ -70,12 +70,12 @@ public class LecturerController implements BaseController<Lecturer, LecturerDTO>
     public ResponseEntity<Object> createLecturer(@RequestBody LecturerDTO dto){
 
         Lecturer lecturer = getObject(dto);
-        lecturerRepository.saveAndFlush(lecturer);
+        lecturer = lecturerRepository.saveAndFlush(lecturer);
 
 //        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 //                .buildAndExpand(savedStudent.getId()).toUri();
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity(getDTO(lecturer),HttpStatus.CREATED);
     }
 
     @PutMapping("/lecturers/{id}")
@@ -110,7 +110,7 @@ public class LecturerController implements BaseController<Lecturer, LecturerDTO>
 
         lecturerRepository.deleteById(id);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(value = "/lecturers/{lecturerId}/addtocourses/{courseId}")
@@ -132,7 +132,7 @@ public class LecturerController implements BaseController<Lecturer, LecturerDTO>
         lecturer.getCourses().add(course);
         lecturerRepository.saveAndFlush(lecturer);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
 
     }
 

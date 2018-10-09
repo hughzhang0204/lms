@@ -23,7 +23,7 @@ public class Student {
     private String lastName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true, length = 8)
+    @Column(nullable = true)
     private Gender gender;
 
     @Temporal(DATE)

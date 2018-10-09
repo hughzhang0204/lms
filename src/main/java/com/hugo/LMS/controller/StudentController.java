@@ -67,7 +67,7 @@ public class StudentController implements BaseController<Student, StudentDTO> {
 
         Student student = getObject(dto);
         student = studentRepository.saveAndFlush(student);
-        return new ResponseEntity<>(student, HttpStatus.CREATED);
+        return new ResponseEntity<>(getDTO(student), HttpStatus.CREATED);
     }
 
     @PutMapping("/students/{id}")
@@ -102,7 +102,7 @@ public class StudentController implements BaseController<Student, StudentDTO> {
         }
         studentRepository.deleteById(id);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @Override
